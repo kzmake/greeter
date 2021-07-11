@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  dev:
+    image: curlimages/curl:latest
+    command: "sh -c 'trap : SIGTERM SIGINT; sleep infinity & wait'"
+  gateway:
+    hostname: gateway.example.com
+    image: kzmake/greeter:latest
+    command: "/gateway"
+  greeter:
+    hostname: greeter.example.com
+    image: kzmake/greeter:latest
+    command: "/service"

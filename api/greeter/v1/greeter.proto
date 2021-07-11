@@ -1,5 +1,10 @@
-# greeter
-```proto
+syntax = "proto3";
+
+package calculator.adder.v1;
+option go_package = "github.com/kzmake/greeter/api/greeter/v1;greeter";
+
+import "google/api/annotations.proto";
+
 service Greeter {
   rpc Hello(HelloRequest) returns (HelloResponse) {
     option (google.api.http) = {
@@ -16,24 +21,3 @@ message HelloRequest {
 message HelloResponse {
   string msg = 1;
 }
-```
-
-## run app
-```bash
-make up
-```
-
-## request api
-```
-make request
-```
-
-## generate certs for mTLS
-```bash
-make certs
-```
-
-## publish image
-```bash
-make publish
-```

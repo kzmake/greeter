@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  dev:
+    image: curlimages/curl:latest
+    command: "sh -c 'trap : SIGTERM SIGINT; sleep infinity & wait'"
+  gateway:
+    hostname: gateway.example.com
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "/gateway"
+    environment:
+      GATEWAY_ADDRESS: "0.0.0.0:8080"
+      GATEWAY_SERVICE_ADDRESS: "greeter.example.com:50051"
+      GATEWAY_MTLS: "true"
+    volumes:
+      - ./certs:/certs
+    ports:
+      - 8080:8080 # http
+  greeter:
+    hostname: greeter.example.com
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "/service"
+    environment:
+      SERVICE_ADDRESS: "0.0.0.0:50051"
+      SERVICE_MTLS: "true"
+    volumes:
+      - ./certs:/certs
+    ports:
+      - 50051:50051 # grpc
