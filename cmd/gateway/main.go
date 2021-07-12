@@ -29,7 +29,7 @@ import (
 type Env struct {
 	Address string `default:"0.0.0.0:8080"`
 	Service struct {
-		Address string `default:"greeter.example.com:50051"`
+		Address string `default:"greeter.default.svc.cluster.local:50051"`
 	}
 	MTLS bool `default:"true"`
 }

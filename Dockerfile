@@ -9,7 +9,9 @@ RUN go mod download
 ARG CGO_ENABLED=0
 ARG GOOS=linux
 ARG GOARCH=amd64
-COPY . .
+COPY api api
+COPY handler handler
+COPY cmd cmd
 RUN go build -o /go/bin/service -ldflags '-s -w' cmd/service/main.go
 RUN go build -o /go/bin/gateway -ldflags '-s -w' cmd/gateway/main.go
 

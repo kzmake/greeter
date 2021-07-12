@@ -26,6 +26,15 @@ proto:
 		echo "generated from $$file"; \
 	done
 
+
+.PHONY: build
+build: certs
+	docker build -t kzmake/greeter .
+
+.PHONY: publish
+publish: build
+	docker push kzmake/greeter
+
 .PHONY: certs
 certs: certs/gen certs/view
 
@@ -43,7 +52,7 @@ certs/gen/server: certs/gen/server/greeter
 .PHONY: certs/gen/server/greeter
 certs/gen/server/greeter:
 	openssl genrsa -out certs/server.greeter.key 2048
-	openssl req -new -key certs/server.greeter.key -subj "/CN=*.greeter.example.com"> certs/server.greeter.csr
+	openssl req -new -key certs/server.greeter.key -subj "/CN=*.greeter.default.svc.cluster.local"> certs/server.greeter.csr
 	openssl x509 -req -extfile certs/server.greeter.ext.conf -in certs/server.greeter.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -days 36500 -out certs/server.greeter.crt
 
 .PHONY: certs/gen/server
@@ -52,7 +61,7 @@ certs/gen/server: certs/gen/client/gateway
 .PHONY: certs/gen/client/gateway
 certs/gen/client:
 	openssl genrsa -out certs/client.gateway.key 2048
-	openssl req -new -key certs/client.gateway.key -subj "/CN=gateway.example.com" > certs/client.gateway.csr
+	openssl req -new -key certs/client.gateway.key -subj "/CN=gateway.default.svc.cluster.local" > certs/client.gateway.csr
 	openssl x509 -req -in certs/client.gateway.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -days 36500 -out certs/client.gateway.crt
 
 .PHONY: certs/view
@@ -64,26 +73,18 @@ certs/view:
 	openssl rsa -text -noout -in certs/client.gateway.key
 	openssl x509 -text -noout -in certs/client.gateway.crt
 
-.PHONY: up
-up:
-	docker-compose -f docker-compose.example.yml up
+.PHONY: kind
+kind:
+	kind create cluster --config kind.yaml || true
+
+.PHONY: kind/clean
+kind/clean:
+	kind delete clusters greeter
 
 .PHONY: dev
 dev:
-	docker-compose up --build
-
-.PHONY: down
-down:
-	docker-compose down
+	skaffold run
 
 .PHONY: request
 request:
-	docker-compose exec dev curl -i gateway.example.com:8080/hello -H "Content-Type: application/json" -d '{"name": "alice"}'
-
-.PHONY: build
-build: certs
-	docker build -t kzmake/greeter .
-
-.PHONY: publish
-publish: build
-	docker push kzmake/greeter
+	curl -i localhost:8080/hello -H "Content-Type: application/json" -d '{"name": "alice"}'
