@@ -20,7 +20,7 @@ message HelloResponse {
 
 ## run app
 ```bash
-make up
+make kind dev
 ```
 
 ## request api
@@ -28,12 +28,7 @@ make up
 make request
 ```
 
-## generate certs for mTLS
+## regenerate certs for mTLS
 ```bash
 make certs
-```
-
-## publish image
-```bash
-make publish
 ```

@@ -83,7 +83,7 @@ kind/clean:
 
 .PHONY: dev
 dev:
-	skaffold run
+	skaffold dev
 
 .PHONY: request
 request:
